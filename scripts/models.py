@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler
 
 def train_eval_model(X, y, model, time_series_split, og_dataset, model_name): 
     """ Model training and evaluation for time series data """    
@@ -10,9 +11,15 @@ def train_eval_model(X, y, model, time_series_split, og_dataset, model_name):
 
     print(f"*** {model_name} ***")
 
+    scaler = StandardScaler()
+
     for i, (train_index, test_index) in enumerate(time_series_split.split(X)):
         X_train, X_test = X.iloc[train_index], X.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+        X_train = scaler.fit_transform(X_train)
+        X_test = scaler.transform(X_test)
+
 
         train_dates_min = og_dataset.iloc[train_index]['date'].min().strftime('%Y-%m')
         train_dates_max = og_dataset.iloc[train_index]['date'].max().strftime('%Y-%m')
